@@ -38,7 +38,6 @@
             overflow: hidden;
         }
 
-        /* إضافة نمط الشاشة المدمجة */
         .auth-container {
             display: flex;
             flex-direction: column;
@@ -363,7 +362,6 @@
 </head>
 <body>
     <div class="container" id="app-container">
-        <!-- واجهة تسجيل الدخول/التسجيل -->
         <div class="auth-container" id="auth-container">
             <div class="auth-box">
                 <div class="auth-tabs">
@@ -403,7 +401,6 @@
             </div>
         </div>
 
-        <!-- واجهة الدردشة الرئيسية -->
         <div id="chat-container" style="display: none;">
             <header>
                 <h1><i class="fas fa-comments"></i> دردشة حقيقية مع الأصدقاء</h1>
@@ -418,9 +415,7 @@
             
             <div class="main-content">
                 <div class="chat-area">
-                    <div class="chat-messages" id="chat-messages">
-                        <!-- الرسائل تظهر هنا من Firebase -->
-                    </div>
+                    <div class="chat-messages" id="chat-messages"></div>
                     
                     <div class="typing-indicator" id="typing-indicator"></div>
                     
@@ -441,9 +436,7 @@
                 
                 <div class="users-sidebar">
                     <h3><i class="fas fa-users"></i> المستخدمون المتصلون</h3>
-                    <div id="online-users">
-                        <!-- المستخدمون المتصلون يظهرون هنا -->
-                    </div>
+                    <div id="online-users"></div>
                     <div style="margin-top: 20px;">
                         <h3>إضافة صديق</h3>
                         <div class="form-group" style="margin-top: 10px;">
@@ -457,7 +450,7 @@
     </div>
 
     <script>
-        // 🔥 إعدادات Firebase - الإعدادات الخاصة بك
+        // 🔥 إعدادات Firebase - استبدل هذه بالإعدادات الخاصة بك
         const firebaseConfig = {
             apiKey: "AIzaSyDDWBEDOZnrv6EzN4bW1aBu_FOG9Qe_aZE",
             authDomain: "chat-voix-93d9c.firebaseapp.com",
@@ -560,7 +553,6 @@
 
         // تسجيل الخروج
         logoutBtn.addEventListener('click', () => {
-            // تحديث حالة الاتصال قبل الخروج
             if (currentUser) {
                 database.ref('users/' + currentUser.uid + '/online').set(false);
                 database.ref('users/' + currentUser.uid + '/lastSeen').set(firebase.database.ServerValue.TIMESTAMP);
@@ -575,13 +567,11 @@
             });
         });
 
-        // عرض رسالة الخطأ
         function showAuthError(message) {
             authError.textContent = message;
             authError.style.display = 'block';
         }
 
-        // تحميل بيانات المستخدم
         function loadUserData() {
             database.ref('users/' + currentUser.uid).once('value')
                 .then((snapshot) => {
@@ -589,41 +579,30 @@
                     userNameElement.textContent = userData.name || 'مستخدم';
                     userAvatarElement.textContent = userData.name ? userData.name.charAt(0) : '?';
                     
-                    // تحديث حالة الاتصال
                     updateOnlineStatus();
                     
-                    // إظهار واجهة الدردشة
                     authContainer.style.display = 'none';
                     chatContainer.style.display = 'flex';
                     
-                    // عرض رابط الدردشة
                     const chatUrl = window.location.href;
                     chatLinkElement.textContent = chatUrl;
                     chatLinkElement.innerHTML = `<a href="${chatUrl}" target="_blank">${chatUrl}</a>`;
                     
-                    // تحميل الأصدقاء
                     loadFriends();
-                    
-                    // تحميل الرسائل العامة
                     loadMessages();
-                    
-                    // الاستماع للمستخدمين المتصلين
                     listenToOnlineUsers();
                 });
         }
 
-        // تحديث حالة الاتصال
         function updateOnlineStatus() {
             const userStatusRef = database.ref('users/' + currentUser.uid);
             
-            // تعيين المستخدم كمتصفح
             userStatusRef.update({
                 online: true,
                 lastSeen: firebase.database.ServerValue.TIMESTAMP,
                 name: userNameElement.textContent
             });
             
-            // تحديث حالة الاتصال عند الخروج
             const disconnectRef = database.ref('.info/connected');
             disconnectRef.on('value', (snap) => {
                 if (snap.val() === false) {
@@ -635,7 +614,6 @@
             });
         }
 
-        // تحميل قائمة الأصدقاء
         function loadFriends() {
             database.ref('friends/' + currentUser.uid).on('value', (snapshot) => {
                 friendsList = [];
@@ -650,7 +628,6 @@
                         ...friendData
                     });
                     
-                    // عرض حالة الصديق
                     database.ref('users/' + friendId).on('value', (userSnap) => {
                         const userData = userSnap.val();
                         if (userData) {
@@ -659,14 +636,12 @@
                     });
                 });
                 
-                // إذا لم يكن لديك أصدقاء
                 if (friendsList.length === 0) {
                     onlineUsersElement.innerHTML += '<p>لا يوجد أصدقاء بعد. أضف أصدقاء باستخدام البريد الإلكتروني.</p>';
                 }
             });
         }
 
-        // تحديث عرض الصديق
         function updateFriendDisplay(friendId, userData) {
             let friendElement = document.getElementById('friend-' + friendId);
             
@@ -691,7 +666,6 @@
             }
         }
 
-        // الاستماع للمستخدمين المتصلين
         function listenToOnlineUsers() {
             database.ref('users').on('value', (snapshot) => {
                 onlineUsers = {};
@@ -704,7 +678,6 @@
             });
         }
 
-        // إضافة صديق
         addFriendBtn.addEventListener('click', () => {
             const friendEmail = friendEmailInput.value.trim();
             if (!friendEmail) {
@@ -712,7 +685,6 @@
                 return;
             }
             
-            // البحث عن المستخدم بالبريد الإلكتروني
             database.ref('users').orderByChild('email').equalTo(friendEmail).once('value')
                 .then((snapshot) => {
                     if (snapshot.exists()) {
@@ -720,7 +692,6 @@
                             const friendId = userSnap.key;
                             const friendData = userSnap.val();
                             
-                            // إضافة الصديق لكلا الطرفين
                             database.ref('friends/' + currentUser.uid + '/' + friendId).set({
                                 name: friendData.name,
                                 email: friendData.email,
@@ -745,7 +716,6 @@
                 });
         });
 
-        // بدء محادثة خاصة
         function startPrivateChat(friendId, friendName) {
             currentChatId = [currentUser.uid, friendId].sort().join('_');
             chatMessages.innerHTML = `<div class="message received">
@@ -756,14 +726,11 @@
                 </div>
             </div>`;
             
-            // تحميل رسائل المحادثة
             loadPrivateMessages();
         }
 
-        // تحميل الرسائل العامة
         function loadMessages() {
             if (!currentChatId) {
-                // عرض الرسائل العامة
                 database.ref('messages/public').limitToLast(50).on('value', (snapshot) => {
                     chatMessages.innerHTML = '';
                     snapshot.forEach((messageSnap) => {
@@ -775,7 +742,6 @@
             }
         }
 
-        // تحميل الرسائل الخاصة
         function loadPrivateMessages() {
             if (currentChatId) {
                 database.ref('messages/private/' + currentChatId).limitToLast(50).on('value', (snapshot) => {
@@ -789,7 +755,6 @@
             }
         }
 
-        // عرض رسالة
         function displayMessage(message, isReceived) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${isReceived ? 'received' : 'sent'}`;
@@ -810,7 +775,6 @@
             chatMessages.appendChild(messageDiv);
         }
 
-        // إرسال رسالة
         sendBtn.addEventListener('click', sendMessage);
         messageInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
@@ -831,10 +795,8 @@
             };
             
             if (currentChatId) {
-                // رسالة خاصة
                 database.ref('messages/private/' + currentChatId).push(messageData);
             } else {
-                // رسالة عامة
                 messageData.userId = currentUser.uid;
                 database.ref('messages/public').push(messageData);
             }
@@ -843,12 +805,10 @@
             scrollToBottom();
         }
 
-        // التمرير لأسفل
         function scrollToBottom() {
             chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        // الاستماع لحالة المصادقة
         auth.onAuthStateChanged((user) => {
             if (user) {
                 currentUser = user;
@@ -859,7 +819,6 @@
             }
         });
 
-        // إضافة بعض الرسائل الأولية عند أول دخول
         function addWelcomeMessages() {
             database.ref('messages/public').limitToLast(1).once('value')
                 .then((snapshot) => {
@@ -875,7 +834,6 @@
                 });
         }
 
-        // تشغيل عند تحميل الصفحة
         window.addEventListener('load', () => {
             setTimeout(addWelcomeMessages, 1000);
         });
