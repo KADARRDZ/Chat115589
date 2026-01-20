@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>دردشة صوتية مباشرة - تحدث الآن</title>
+    <title>واتساب ويب - دردشة صوتية مباشرة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Firebase SDK -->
@@ -12,25 +12,22 @@
     
     <style>
         :root {
-            --primary: #2196F3;
-            --secondary: #1976D2;
-            --accent: #FF5722;
-            --success: #4CAF50;
-            --danger: #F44336;
-            --light: #F5F5F5;
-            --dark: #212121;
+            --whatsapp-green: #25D366;
+            --whatsapp-dark: #075E54;
+            --whatsapp-light: #128C7E;
+            --whatsapp-chat: #DCF8C6;
+            --whatsapp-receive: #FFFFFF;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', 'Cairo', sans-serif;
+            font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #1A237E, #0D47A1);
-            color: white;
+            background: linear-gradient(135deg, #0D5C3E, #128C7E);
             min-height: 100vh;
             display: flex;
             justify-content: center;
@@ -38,16 +35,15 @@
             padding: 20px;
         }
 
-        /* شاشة الدخول */
-        .login-container {
+        /* شاشة تسجيل الدخول */
+        .login-screen {
             background: white;
             border-radius: 20px;
             padding: 40px;
             width: 100%;
-            max-width: 500px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            max-width: 400px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             text-align: center;
-            color: var(--dark);
             animation: fadeIn 0.5s ease;
         }
 
@@ -56,629 +52,725 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .login-container h1 {
-            color: var(--primary);
+        .logo {
+            color: var(--whatsapp-green);
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .login-screen h1 {
+            color: var(--whatsapp-dark);
             margin-bottom: 10px;
-            font-size: 2.2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
+            font-size: 1.8rem;
         }
 
-        .login-container h1 i {
-            color: var(--accent);
-        }
-
-        .login-container p {
+        .login-screen p {
             color: #666;
             margin-bottom: 30px;
-            font-size: 1.1rem;
+            line-height: 1.6;
         }
 
-        .name-input {
+        .phone-input {
             width: 100%;
-            padding: 18px;
-            border: 3px solid #E0E0E0;
-            border-radius: 15px;
-            font-size: 1.2rem;
-            margin-bottom: 25px;
+            padding: 15px;
+            border: 2px solid #DDD;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            margin-bottom: 20px;
             text-align: center;
-            font-weight: 600;
             transition: all 0.3s;
         }
 
-        .name-input:focus {
+        .phone-input:focus {
             outline: none;
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(255, 87, 34, 0.2);
+            border-color: var(--whatsapp-green);
+            box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.2);
         }
 
         .login-btn {
             width: 100%;
-            padding: 18px;
-            background: linear-gradient(to right, var(--primary), var(--secondary));
+            padding: 15px;
+            background: var(--whatsapp-green);
             color: white;
             border: none;
-            border-radius: 15px;
-            font-size: 1.3rem;
-            font-weight: 700;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .login-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(33, 150, 243, 0.3);
-        }
-
-        /* حاوية الدردشة */
-        .chat-container {
-            display: none;
-            width: 100%;
-            max-width: 1200px;
-            height: 95vh;
-            background: white;
-            border-radius: 25px;
-            overflow: hidden;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
-            flex-direction: column;
-        }
-
-        /* الهيدر */
-        .header {
-            background: linear-gradient(to right, var(--primary), var(--secondary));
-            padding: 20px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 5px solid var(--accent);
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .user-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 1.5rem;
-            color: white;
-            border: 3px solid white;
-        }
-
-        .logout-btn {
-            background: var(--danger);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-        }
-
-        .logout-btn:hover {
-            background: #D32F2F;
+            background: #1DA851;
             transform: translateY(-2px);
         }
 
-        /* المحتوى الرئيسي */
-        .main-content {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-            background: var(--light);
-        }
-
-        /* الشريط الجانبي */
-        .sidebar {
-            width: 300px;
+        /* واجهة الدردشة */
+        .chat-app {
+            display: none;
+            width: 100%;
+            max-width: 1400px;
+            height: 95vh;
             background: white;
-            border-left: 3px solid #EEE;
-            padding: 25px;
-            overflow-y: auto;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            flex-direction: column;
         }
 
-        .sidebar-title {
-            color: var(--primary);
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 3px solid var(--accent);
-            font-size: 1.4rem;
+        /* شريط البحث والأصدقاء */
+        .sidebar {
+            width: 30%;
+            background: #F0F2F5;
+            border-right: 1px solid #E1E1E1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .profile-header {
+            background: var(--whatsapp-dark);
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: white;
+        }
+
+        .profile-info {
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
-        .online-count {
-            background: var(--success);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 15px;
-            font-size: 0.9rem;
-            font-weight: 700;
-        }
-
-        .users-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .user-item {
-            background: #F8F9FA;
-            border-radius: 15px;
-            padding: 15px;
-            border: 2px solid #E9ECEF;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .user-item:hover {
-            transform: translateX(-5px);
-            border-color: var(--accent);
-            box-shadow: 0 5px 15px rgba(255, 87, 34, 0.1);
-        }
-
-        .user-header {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-
-        .user-avatar-small {
+        .profile-avatar {
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            background: var(--whatsapp-green);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
+            font-weight: 600;
             color: white;
-            font-size: 1.1rem;
         }
 
-        .user-name-small {
-            font-weight: 700;
-            color: var(--dark);
+        .logout-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .search-box {
+            padding: 15px;
+            background: white;
+            border-bottom: 1px solid #E1E1E1;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #DDD;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            background: #F0F2F5;
+        }
+
+        .search-input:focus {
+            outline: none;
+        }
+
+        .friends-list {
             flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .friend-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+            border-bottom: 1px solid #F0F2F5;
+        }
+
+        .friend-item:hover {
+            background: #F5F5F5;
+        }
+
+        .friend-item.active {
+            background: #E1F5FE;
+        }
+
+        .friend-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--whatsapp-light), var(--whatsapp-green));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+            margin-left: 10px;
+        }
+
+        .friend-info {
+            flex: 1;
+        }
+
+        .friend-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .friend-status {
+            font-size: 0.85rem;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 5px;
         }
 
         .online-dot {
-            width: 12px;
-            height: 12px;
-            background: var(--success);
+            width: 8px;
+            height: 8px;
+            background: var(--whatsapp-green);
             border-radius: 50%;
-            animation: pulse 2s infinite;
         }
 
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.3); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        .call-btn {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(to right, var(--success), #2E7D32);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.3s;
-        }
-
-        .call-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
-        }
-
-        .no-users {
-            text-align: center;
-            color: #666;
-            padding: 40px 20px;
-            font-style: italic;
-        }
-
-        /* منطقة المكالمة */
-        .call-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            padding: 25px;
-            background: linear-gradient(135deg, #1A237E, #0D47A1);
-        }
-
-        .call-info {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .call-title {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-        }
-
-        .call-with {
-            font-size: 1.3rem;
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .call-timer {
-            font-size: 3.5rem;
-            font-family: monospace;
-            font-weight: 700;
-            color: var(--accent);
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-            margin: 20px 0;
-        }
-
-        /* مؤشر الصوت */
-        .voice-indicator {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
-
-        .voice-level {
-            height: 100px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            margin: 20px 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .voice-bar {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 0%;
-            background: linear-gradient(to top, var(--accent), #FF9800);
-            transition: height 0.1s;
-            border-radius: 10px;
-        }
-
-        .voice-status {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
+        .call-icon {
+            color: var(--whatsapp-green);
             font-size: 1.2rem;
-        }
-
-        .voice-icon {
-            font-size: 2rem;
-            color: var(--accent);
-            animation: microphone 1.5s infinite;
-        }
-
-        @keyframes microphone {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-
-        /* أزرار التحكم */
-        .call-controls {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-        }
-
-        .control-btn {
-            width: 80px;
-            height: 80px;
+            padding: 8px;
             border-radius: 50%;
-            border: none;
-            font-size: 1.8rem;
-            cursor: pointer;
             transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        .end-call-btn {
-            background: var(--danger);
-            color: white;
-            box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
-        }
-
-        .mute-btn {
-            background: #757575;
-            color: white;
-            box-shadow: 0 5px 15px rgba(117, 117, 117, 0.4);
-        }
-
-        .control-btn:hover {
+        .call-icon:hover {
+            background: rgba(37, 211, 102, 0.1);
             transform: scale(1.1);
         }
 
-        /* تنبيه المكالمة */
-        .call-alert {
+        /* منطقة الدردشة */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            background: #F0F2F5;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #E1E1E1;
+        }
+
+        .chat-friend-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chat-friend-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .chat-friend-status {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .chat-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .chat-control-btn {
+            background: transparent;
+            border: none;
+            color: var(--whatsapp-dark);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+
+        .chat-control-btn:hover {
+            background: rgba(0, 0, 0, 0.05);
+        }
+
+        .messages-container {
+            flex: 1;
+            padding: 20px;
+            background: #E5DDD5;
+            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d1d1d1' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            display: flex;
+            animation: messageIn 0.3s ease;
+        }
+
+        @keyframes messageIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.sent {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 65%;
+            padding: 10px 15px;
+            border-radius: 8px;
+            position: relative;
+            word-wrap: break-word;
+        }
+
+        .message.sent .message-content {
+            background: var(--whatsapp-chat);
+            border-top-right-radius: 0;
+        }
+
+        .message.received .message-content {
+            background: var(--whatsapp-receive);
+            border-top-left-radius: 0;
+            box-shadow: 0 1px 0.5px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-time {
+            font-size: 0.7rem;
+            color: #999;
+            text-align: right;
+            margin-top: 3px;
+        }
+
+        .message-input-area {
+            padding: 15px 20px;
+            background: #F0F2F5;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 20px;
+            font-size: 1rem;
+            background: white;
+            resize: none;
+            max-height: 120px;
+        }
+
+        .message-input:focus {
+            outline: none;
+        }
+
+        .send-btn {
+            background: var(--whatsapp-green);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .send-btn:hover {
+            background: #1DA851;
+            transform: scale(1.05);
+        }
+
+        /* نافذة المكالمة */
+        .call-modal {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             z-index: 1000;
             text-align: center;
             display: none;
-            animation: alertIn 0.3s ease;
+            min-width: 300px;
         }
 
-        @keyframes alertIn {
-            from { transform: translate(-50%, -50%) scale(0.9); opacity: 0; }
-            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        .call-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--whatsapp-light), var(--whatsapp-green));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            margin: 0 auto 20px;
         }
 
-        .call-alert h3 {
-            color: var(--primary);
+        .call-title {
+            color: var(--whatsapp-dark);
             margin-bottom: 10px;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
         }
 
-        .call-alert p {
+        .call-status {
             color: #666;
             margin-bottom: 30px;
-            font-size: 1.2rem;
+            font-size: 1rem;
         }
 
-        .alert-buttons {
+        .call-timer {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--whatsapp-green);
+            margin: 20px 0;
+            font-family: monospace;
+        }
+
+        .call-controls {
             display: flex;
-            gap: 15px;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
         }
 
-        .alert-btn {
-            flex: 1;
-            padding: 15px;
+        .call-control-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
             border: none;
-            border-radius: 10px;
-            font-weight: 700;
+            font-size: 1.5rem;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
+        }
+
+        .call-control-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .end-call-btn {
+            background: #FF3B30;
+            color: white;
+        }
+
+        .mute-btn {
+            background: #8E8E93;
+            color: white;
+        }
+
+        .accept-call-btn {
+            background: var(--whatsapp-green);
+            color: white;
+            width: 80px;
+            height: 80px;
+            font-size: 2rem;
+        }
+
+        .reject-call-btn {
+            background: #FF3B30;
+            color: white;
+            width: 60px;
+            height: 60px;
+        }
+
+        /* تنبيه المكالمة */
+        .incoming-call {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            display: none;
+            animation: slideIn 0.3s ease;
+            min-width: 300px;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .incoming-call-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .incoming-call-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--whatsapp-light), var(--whatsapp-green));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .incoming-call-info h4 {
+            color: var(--whatsapp-dark);
+            margin-bottom: 5px;
+        }
+
+        .incoming-call-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .incoming-call-controls {
+            display: flex;
             gap: 10px;
         }
 
-        .accept-btn {
-            background: linear-gradient(to right, var(--success), #2E7D32);
-            color: white;
+        /* رسائل النظام */
+        .system-message {
+            text-align: center;
+            margin: 15px 0;
         }
 
-        .reject-btn {
-            background: linear-gradient(to right, var(--danger), #C62828);
-            color: white;
+        .system-content {
+            display: inline-block;
+            padding: 8px 15px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 15px;
+            color: #666;
+            font-size: 0.9rem;
         }
 
-        .alert-btn:hover {
-            transform: translateY(-2px);
+        /* رسائل الصوت */
+        .voice-message {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(37, 211, 102, 0.1);
+            border-radius: 10px;
+        }
+
+        .voice-play-btn {
+            background: var(--whatsapp-green);
+            color: white;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .voice-duration {
+            font-size: 0.9rem;
+            color: #666;
         }
 
         /* تصميم متجاوب */
-        @media (max-width: 992px) {
-            .main-content {
-                flex-direction: column;
+        @media (max-width: 768px) {
+            .chat-app {
+                height: 100vh;
+                border-radius: 0;
             }
             
             .sidebar {
                 width: 100%;
-                border-left: none;
-                border-top: 3px solid #EEE;
-                max-height: 250px;
+                display: none;
             }
             
-            .call-controls {
-                gap: 20px;
+            .sidebar.active {
+                display: flex;
             }
             
-            .control-btn {
-                width: 70px;
-                height: 70px;
-                font-size: 1.5rem;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .login-container {
-                padding: 30px 20px;
+            .chat-area {
+                display: none;
             }
             
-            .chat-container {
-                height: 95vh;
-                border-radius: 15px;
+            .chat-area.active {
+                display: flex;
             }
             
-            .header {
-                flex-direction: column;
-                gap: 15px;
-                padding: 15px;
+            .back-to-friends {
+                display: block !important;
             }
             
-            .user-info {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .call-title {
-                font-size: 1.6rem;
-            }
-            
-            .call-timer {
-                font-size: 2.8rem;
-            }
-            
-            .call-alert {
+            .call-modal {
                 width: 90%;
-                padding: 30px 20px;
+                padding: 20px;
             }
         }
 
-        @media (max-width: 480px) {
-            body {
-                padding: 10px;
-            }
-            
-            .login-container h1 {
-                font-size: 1.8rem;
-            }
-            
-            .name-input, .login-btn {
-                padding: 15px;
-                font-size: 1.1rem;
-            }
-            
-            .call-controls {
-                gap: 15px;
-            }
-            
-            .control-btn {
-                width: 60px;
-                height: 60px;
-                font-size: 1.3rem;
-            }
+        .back-to-friends {
+            display: none;
+            background: transparent;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--whatsapp-dark);
+            cursor: pointer;
+            padding: 5px;
         }
 
-        /* تأثيرات إضافية */
-        .pulse {
-            animation: pulse 2s infinite;
+        /* تخصيص شريط التمرير */
+        ::-webkit-scrollbar {
+            width: 6px;
         }
 
-        .shake {
-            animation: shake 0.5s ease;
+        ::-webkit-scrollbar-track {
+            background: #F1F1F1;
         }
 
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
+        ::-webkit-scrollbar-thumb {
+            background: #BDBDBD;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #9E9E9E;
         }
     </style>
 </head>
 <body>
-    <!-- شاشة الدخول -->
-    <div class="login-container" id="loginContainer">
-        <h1><i class="fas fa-phone-alt"></i> دردشة صوتية مباشرة</h1>
-        <p>ادخل اسمك وابدأ التحدث مع الأصدقاء فوراً</p>
-        <input type="text" id="userNameInput" class="name-input" placeholder="اكتب اسمك هنا..." maxlength="20" autofocus>
+    <!-- شاشة تسجيل الدخول -->
+    <div class="login-screen" id="loginScreen">
+        <div class="logo">
+            <i class="fab fa-whatsapp"></i>
+        </div>
+        <h1>واتساب ويب</h1>
+        <p>ادخل رقم هاتفك للدخول إلى دردشة صوتية مباشرة مع أصدقائك</p>
+        <input type="text" id="phoneInput" class="phone-input" placeholder="رقم الهاتف (مثال: 0551234567)" maxlength="10" autofocus>
         <button class="login-btn" id="loginBtn">
-            <i class="fas fa-sign-in-alt"></i> دخول سريع
+            <i class="fas fa-sign-in-alt"></i> تسجيل الدخول
         </button>
     </div>
 
-    <!-- حاوية الدردشة -->
-    <div class="chat-container" id="chatContainer">
-        <!-- الهيدر -->
-        <header class="header">
-            <div class="user-info">
-                <div class="user-avatar" id="userAvatar">?</div>
-                <div>
-                    <h2 style="color: white;" id="userName">مستخدم</h2>
-                    <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">متصل الآن</p>
-                </div>
-            </div>
-            <button class="logout-btn" id="logoutBtn">
-                <i class="fas fa-sign-out-alt"></i> تغيير الاسم
-            </button>
-        </header>
-
-        <!-- المحتوى الرئيسي -->
-        <div class="main-content">
-            <!-- الشريط الجانبي -->
-            <div class="sidebar">
-                <div class="sidebar-title">
-                    <i class="fas fa-users"></i> المتصلون الآن
-                    <span class="online-count" id="onlineCount">0</span>
-                </div>
-                <div class="users-list" id="usersList">
-                    <!-- المستخدمون المتصلون -->
-                </div>
-            </div>
-
-            <!-- منطقة المكالمة -->
-            <div class="call-area" id="callArea">
-                <div class="call-info">
-                    <h2 class="call-title"><i class="fas fa-phone-alt"></i> دردشة صوتية</h2>
-                    <p class="call-with" id="callWithText">اختر صديقاً من القائمة للاتصال</p>
-                    <div class="call-timer" id="callTimer">00:00</div>
-                </div>
-
-                <!-- مؤشر الصوت -->
-                <div class="voice-indicator">
-                    <div class="voice-level">
-                        <div class="voice-bar" id="voiceBar"></div>
-                    </div>
-                    <div class="voice-status">
-                        <i class="fas fa-microphone voice-icon" id="voiceIcon"></i>
-                        <span id="voiceStatus">جاهز للتحدث</span>
+    <!-- واجهة الدردشة -->
+    <div class="chat-app" id="chatApp">
+        <!-- الشريط الجانبي -->
+        <div class="sidebar" id="sidebar">
+            <div class="profile-header">
+                <div class="profile-info">
+                    <div class="profile-avatar" id="userAvatar">?</div>
+                    <div>
+                        <div id="userName">مستخدم</div>
+                        <div style="font-size: 0.8rem; opacity: 0.8;">متصل</div>
                     </div>
                 </div>
+                <button class="logout-btn" id="logoutBtn" title="تسجيل الخروج">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
 
-                <!-- أزرار التحكم -->
-                <div class="call-controls">
-                    <button class="control-btn mute-btn" id="muteBtn">
-                        <i class="fas fa-microphone"></i>
+            <div class="search-box">
+                <input type="text" class="search-input" placeholder="ابحث عن محادثة..." id="searchInput">
+            </div>
+
+            <div class="friends-list" id="friendsList">
+                <!-- قائمة الأصدقاء تظهر هنا -->
+            </div>
+        </div>
+
+        <!-- منطقة الدردشة -->
+        <div class="chat-area" id="chatArea">
+            <div class="chat-header">
+                <button class="back-to-friends" id="backBtn">
+                    <i class="fas fa-arrow-right"></i>
+                </button>
+                <div class="chat-friend-info">
+                    <div class="friend-avatar" id="chatFriendAvatar">?</div>
+                    <div>
+                        <div class="chat-friend-name" id="chatFriendName">اختر محادثة</div>
+                        <div class="chat-friend-status" id="chatFriendStatus">...</div>
+                    </div>
+                </div>
+                <div class="chat-controls">
+                    <button class="chat-control-btn" id="voiceCallBtn" title="مكالمة صوتية">
+                        <i class="fas fa-phone-alt"></i>
                     </button>
-                    <button class="control-btn end-call-btn" id="endCallBtn">
-                        <i class="fas fa-phone-slash"></i>
+                    <button class="chat-control-btn" id="videoCallBtn" title="مكالمة فيديو">
+                        <i class="fas fa-video"></i>
                     </button>
                 </div>
             </div>
+
+            <div class="messages-container" id="messagesContainer">
+                <!-- الرسائل تظهر هنا -->
+            </div>
+
+            <div class="message-input-area">
+                <textarea class="message-input" id="messageInput" placeholder="اكتب رسالة..." rows="1"></textarea>
+                <button class="send-btn" id="sendBtn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة المكالمة -->
+    <div class="call-modal" id="callModal">
+        <div class="call-avatar" id="callAvatar">?</div>
+        <h3 class="call-title" id="callTitle">مكالمة صوتية</h3>
+        <p class="call-status" id="callStatus">...</p>
+        <div class="call-timer" id="callTimer">00:00</div>
+        <div class="call-controls" id="callControls">
+            <!-- أزرار التحكم بالمكالمة -->
         </div>
     </div>
 
     <!-- تنبيه المكالمة الواردة -->
-    <div class="call-alert" id="callAlert">
-        <h3><i class="fas fa-phone-volume"></i> مكالمة واردة</h3>
-        <p id="callerName">شخص ما يتصل بك</p>
-        <div class="alert-buttons">
-            <button class="alert-btn accept-btn" id="acceptCallBtn">
-                <i class="fas fa-phone"></i> قبول
+    <div class="incoming-call" id="incomingCall">
+        <div class="incoming-call-header">
+            <div class="incoming-call-avatar" id="incomingCallAvatar">?</div>
+            <div class="incoming-call-info">
+                <h4 id="incomingCallerName">مستخدم</h4>
+                <p>مكالمة صوتية واردة</p>
+            </div>
+        </div>
+        <div class="incoming-call-controls">
+            <button class="call-control-btn accept-call-btn" id="acceptIncomingCallBtn">
+                <i class="fas fa-phone"></i>
             </button>
-            <button class="alert-btn reject-btn" id="rejectCallBtn">
-                <i class="fas fa-phone-slash"></i> رفض
+            <button class="call-control-btn reject-call-btn" id="rejectIncomingCallBtn">
+                <i class="fas fa-phone-slash"></i>
             </button>
         </div>
     </div>
-
-    <!-- SimplePeer لـ WebRTC -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/simple-peer/9.11.1/simplepeer.min.js"></script>
 
     <script>
         // 🔥 إعدادات Firebase
@@ -699,111 +791,128 @@
 
         // متغيرات التطبيق
         let currentUser = null;
-        let currentUserId = null;
-        let peer = null;
-        let localStream = null;
-        let audioContext = null;
-        let analyser = null;
-        let callTimerInterval = null;
-        let callStartTime = null;
         let currentCall = null;
-        let isMuted = false;
+        let localStream = null;
+        let peerConnection = null;
+        let callTimerInterval = null;
+        let currentChatFriend = null;
+        let friends = [];
 
         // عناصر DOM
-        const loginContainer = document.getElementById('loginContainer');
-        const chatContainer = document.getElementById('chatContainer');
-        const userNameInput = document.getElementById('userNameInput');
+        const loginScreen = document.getElementById('loginScreen');
+        const chatApp = document.getElementById('chatApp');
+        const phoneInput = document.getElementById('phoneInput');
         const loginBtn = document.getElementById('loginBtn');
         const userAvatar = document.getElementById('userAvatar');
         const userName = document.getElementById('userName');
         const logoutBtn = document.getElementById('logoutBtn');
-        const onlineCount = document.getElementById('onlineCount');
-        const usersList = document.getElementById('usersList');
-        const callArea = document.getElementById('callArea');
-        const callWithText = document.getElementById('callWithText');
+        const searchInput = document.getElementById('searchInput');
+        const friendsList = document.getElementById('friendsList');
+        const sidebar = document.getElementById('sidebar');
+        const chatArea = document.getElementById('chatArea');
+        const backBtn = document.getElementById('backBtn');
+        const chatFriendAvatar = document.getElementById('chatFriendAvatar');
+        const chatFriendName = document.getElementById('chatFriendName');
+        const chatFriendStatus = document.getElementById('chatFriendStatus');
+        const voiceCallBtn = document.getElementById('voiceCallBtn');
+        const videoCallBtn = document.getElementById('videoCallBtn');
+        const messagesContainer = document.getElementById('messagesContainer');
+        const messageInput = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const callModal = document.getElementById('callModal');
+        const callAvatar = document.getElementById('callAvatar');
+        const callTitle = document.getElementById('callTitle');
+        const callStatus = document.getElementById('callStatus');
         const callTimer = document.getElementById('callTimer');
-        const voiceBar = document.getElementById('voiceBar');
-        const voiceIcon = document.getElementById('voiceIcon');
-        const voiceStatus = document.getElementById('voiceStatus');
-        const muteBtn = document.getElementById('muteBtn');
-        const endCallBtn = document.getElementById('endCallBtn');
-        const callAlert = document.getElementById('callAlert');
-        const callerName = document.getElementById('callerName');
-        const acceptCallBtn = document.getElementById('acceptCallBtn');
-        const rejectCallBtn = document.getElementById('rejectCallBtn');
+        const callControls = document.getElementById('callControls');
+        const incomingCall = document.getElementById('incomingCall');
+        const incomingCallAvatar = document.getElementById('incomingCallAvatar');
+        const incomingCallerName = document.getElementById('incomingCallerName');
+        const acceptIncomingCallBtn = document.getElementById('acceptIncomingCallBtn');
+        const rejectIncomingCallBtn = document.getElementById('rejectIncomingCallBtn');
 
-        // دخول المستخدم
+        // قائمة أصدقاء افتراضية
+        const defaultFriends = [
+            { id: '1', name: 'أحمد محمد', phone: '0551111111', avatar: 'أ' },
+            { id: '2', name: 'سارة خالد', phone: '0552222222', avatar: 'س' },
+            { id: '3', name: 'محمد علي', phone: '0553333333', avatar: 'م' },
+            { id: '4', name: 'فاطمة حسن', phone: '0554444444', avatar: 'ف' },
+            { id: '5', name: 'خالد سعيد', phone: '0555555555', avatar: 'خ' },
+            { id: '6', name: 'نورا عبدالله', phone: '0556666666', avatar: 'ن' },
+            { id: '7', name: 'يوسف راشد', phone: '0557777777', avatar: 'ي' },
+            { id: '8', name: 'لينا عمر', phone: '0558888888', avatar: 'ل' }
+        ];
+
+        // تسجيل الدخول
         loginBtn.addEventListener('click', loginUser);
-        userNameInput.addEventListener('keypress', (e) => {
+        phoneInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') loginUser();
         });
 
-        async function loginUser() {
-            const name = userNameInput.value.trim();
-            if (!name) {
-                alert('الرجاء إدخال اسمك');
+        function loginUser() {
+            const phone = phoneInput.value.trim();
+            
+            if (!phone || phone.length !== 10 || !/^\d+$/.test(phone)) {
+                alert('الرجاء إدخال رقم هاتف صحيح مكون من 10 أرقام');
                 return;
             }
 
             currentUser = {
-                id: generateUserId(),
-                name: name,
-                avatar: name.charAt(0).toUpperCase()
+                id: 'user_' + phone,
+                phone: phone,
+                name: 'مستخدم ' + phone,
+                avatar: phone.charAt(0)
             };
 
-            currentUserId = currentUser.id;
-
             // تحديث الواجهة
-            loginContainer.style.display = 'none';
-            chatContainer.style.display = 'flex';
+            loginScreen.style.display = 'none';
+            chatApp.style.display = 'flex';
             userAvatar.textContent = currentUser.avatar;
             userName.textContent = currentUser.name;
 
-            // الاتصال بقاعدة البيانات
-            await connectToDatabase();
+            // تحميل الأصدقاء
+            loadFriends();
             
-            // تهيئة الصوت
-            await initializeAudio();
+            // الاتصال بقاعدة البيانات
+            connectToDatabase();
         }
 
         // تسجيل الخروج
         logoutBtn.addEventListener('click', () => {
-            if (confirm('هل تريد تغيير الاسم؟')) {
+            if (confirm('هل تريد تسجيل الخروج؟')) {
                 endCurrentCall();
                 
-                if (currentUserId) {
-                    database.ref('users/' + currentUserId).remove();
+                if (currentUser) {
+                    database.ref('users/' + currentUser.id).remove();
                 }
 
                 // إعادة الضبط
                 currentUser = null;
-                currentUserId = null;
-                chatContainer.style.display = 'none';
-                loginContainer.style.display = 'block';
-                userNameInput.value = '';
-                userNameInput.focus();
-                usersList.innerHTML = '';
-                onlineCount.textContent = '0';
-                callWithText.textContent = 'اختر صديقاً من القائمة للاتصال';
-                callTimer.textContent = '00:00';
-                voiceBar.style.height = '0%';
-                voiceStatus.textContent = 'جاهز للتحدث';
+                chatApp.style.display = 'none';
+                loginScreen.style.display = 'block';
+                phoneInput.value = '';
+                phoneInput.focus();
+                friendsList.innerHTML = '';
+                messagesContainer.innerHTML = '';
             }
         });
 
-        // إنشاء معرف مستخدم فريد
-        function generateUserId() {
-            return 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-        }
+        // العودة لقائمة الأصدقاء (للجوال)
+        backBtn.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+                sidebar.classList.add('active');
+                chatArea.classList.remove('active');
+            }
+        });
 
         // الاتصال بقاعدة البيانات
-        async function connectToDatabase() {
-            if (!currentUserId) return;
+        function connectToDatabase() {
+            if (!currentUser) return;
 
-            // تحديث حالة المستخدم
-            const userRef = database.ref('users/' + currentUserId);
-            await userRef.set({
+            const userRef = database.ref('users/' + currentUser.id);
+            userRef.set({
                 name: currentUser.name,
+                phone: currentUser.phone,
                 avatar: currentUser.avatar,
                 online: true,
                 lastSeen: Date.now()
@@ -818,268 +927,314 @@
                 endCurrentCall();
             });
 
-            // تحميل المستخدمين المتصلين
-            loadOnlineUsers();
-
-            // الاستماع لدعوات المكالمات
-            listenForCalls();
+            // الاستماع للمكالمات الواردة
+            listenForIncomingCalls();
         }
 
-        // تهيئة الصوت
-        async function initializeAudio() {
-            try {
-                // طلب الوصول للميكروفون
-                localStream = await navigator.mediaDevices.getUserMedia({
-                    audio: {
-                        echoCancellation: true,
-                        noiseSuppression: true,
-                        autoGainControl: true
-                    },
-                    video: false
-                });
+        // تحميل قائمة الأصدقاء
+        function loadFriends() {
+            friends = defaultFriends;
+            renderFriendsList(friends);
 
-                // إنشاء AudioContext لتحليل الصوت
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                analyser = audioContext.createAnalyser();
-                const source = audioContext.createMediaStreamSource(localStream);
-                source.connect(analyser);
-                analyser.fftSize = 256;
-
-                // تحديث مؤشر الصوت
-                updateVoiceIndicator();
-
-                // كتم الصوت مؤقتاً
-                localStream.getAudioTracks().forEach(track => {
-                    track.enabled = false;
-                });
-
-                voiceStatus.textContent = 'جاهز للتحدث';
-                voiceIcon.className = 'fas fa-microphone voice-icon';
-
-            } catch (error) {
-                console.error('خطأ في تهيئة الصوت:', error);
-                voiceStatus.textContent = 'خطأ في الميكروفون';
-                voiceIcon.className = 'fas fa-microphone-slash voice-icon';
-                voiceIcon.style.color = '#F44336';
-            }
-        }
-
-        // تحديث مؤشر الصوت
-        function updateVoiceIndicator() {
-            if (!analyser || !localStream) return;
-
-            const dataArray = new Uint8Array(analyser.frequencyBinCount);
-            
-            function checkVolume() {
-                analyser.getByteFrequencyData(dataArray);
-                let sum = 0;
-                for (let i = 0; i < dataArray.length; i++) {
-                    sum += dataArray[i];
-                }
-                const average = sum / dataArray.length;
-                
-                // تحديث شريط الصوت
-                const volume = Math.min(average, 100);
-                voiceBar.style.height = volume + '%';
-                
-                // تحديث الأيقونة
-                if (volume > 20) {
-                    voiceIcon.className = 'fas fa-microphone voice-icon pulse';
-                    voiceIcon.style.color = '#FF5722';
-                } else {
-                    voiceIcon.className = 'fas fa-microphone voice-icon';
-                    voiceIcon.style.color = '#FF5722';
-                }
-                
-                requestAnimationFrame(checkVolume);
-            }
-            
-            checkVolume();
-        }
-
-        // تحميل المستخدمين المتصلين
-        function loadOnlineUsers() {
-            database.ref('users').orderByChild('online').equalTo(true).on('value', (snapshot) => {
-                usersList.innerHTML = '';
-                let onlineUsers = 0;
-
-                snapshot.forEach((userSnap) => {
-                    const user = userSnap.val();
-                    const userId = userSnap.key;
-
-                    // لا تعرض المستخدم الحالي
-                    if (userId === currentUserId) return;
-
-                    onlineUsers++;
-
-                    const userElement = document.createElement('div');
-                    userElement.className = 'user-item';
-                    userElement.innerHTML = `
-                        <div class="user-header">
-                            <div class="user-avatar-small">${user.avatar || user.name.charAt(0).toUpperCase()}</div>
-                            <div class="user-name-small">${user.name}</div>
-                            <div class="online-dot"></div>
-                        </div>
-                        <button class="call-btn" onclick="startCallWith('${userId}', '${user.name}')">
-                            <i class="fas fa-phone-alt"></i> اتصل الآن
-                        </button>
-                    `;
-
-                    usersList.appendChild(userElement);
-                });
-
-                onlineCount.textContent = onlineUsers;
-
-                if (onlineUsers === 0) {
-                    usersList.innerHTML = `
-                        <div class="no-users">
-                            <i class="fas fa-users" style="font-size: 3rem; color: #DDD; margin-bottom: 20px;"></i>
-                            <p>لا يوجد مستخدمون متصلون حالياً</p>
-                            <p style="font-size: 0.9rem; margin-top: 10px;">اطلب من أصدقائك الدخول</p>
-                        </div>
-                    `;
-                }
+            // البحث في الأصدقاء
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const filteredFriends = defaultFriends.filter(friend => 
+                    friend.name.toLowerCase().includes(searchTerm) || 
+                    friend.phone.includes(searchTerm)
+                );
+                renderFriendsList(filteredFriends);
             });
         }
 
-        // بدء مكالمة مع مستخدم
-        window.startCallWith = async function(userId, userName) {
-            if (currentCall) {
-                alert('لديك مكالمة جارية حالياً');
-                return;
+        // عرض قائمة الأصدقاء
+        function renderFriendsList(friendsList) {
+            friendsList.innerHTML = '';
+            
+            friendsList.forEach(friend => {
+                const friendElement = document.createElement('div');
+                friendElement.className = 'friend-item';
+                friendElement.dataset.friendId = friend.id;
+                friendElement.dataset.friendName = friend.name;
+                friendElement.dataset.friendAvatar = friend.avatar;
+                
+                friendElement.innerHTML = `
+                    <div class="friend-avatar">${friend.avatar}</div>
+                    <div class="friend-info">
+                        <div class="friend-name">${friend.name}</div>
+                        <div class="friend-status">
+                            <span class="online-dot"></span>
+                            <span>${friend.phone}</span>
+                        </div>
+                    </div>
+                    <div class="call-icon" onclick="startVoiceCall('${friend.id}', '${friend.name}', '${friend.avatar}')">
+                        <i class="fas fa-phone-alt"></i>
+                    </div>
+                `;
+                
+                friendElement.addEventListener('click', (e) => {
+                    if (!e.target.closest('.call-icon')) {
+                        openChat(friend);
+                    }
+                });
+                
+                friendsList.appendChild(friendElement);
+            });
+        }
+
+        // فتح محادثة مع صديق
+        function openChat(friend) {
+            currentChatFriend = friend;
+            
+            // تحديث الواجهة
+            chatFriendAvatar.textContent = friend.avatar;
+            chatFriendName.textContent = friend.name;
+            chatFriendStatus.textContent = 'متصل الآن';
+            
+            // إظهار منطقة الدردشة (للجوال)
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('active');
+                chatArea.classList.add('active');
             }
+            
+            // تحميل الرسائل
+            loadMessages(friend.id);
+            
+            // تفعيل أزرار المكالمة
+            voiceCallBtn.onclick = () => startVoiceCall(friend.id, friend.name, friend.avatar);
+            videoCallBtn.onclick = () => startVideoCall(friend.id, friend.name, friend.avatar);
+        }
 
+        // بدء مكالمة صوتية
+        window.startVoiceCall = async function(friendId, friendName, friendAvatar) {
             try {
-                // تفعيل الصوت
-                if (localStream) {
-                    localStream.getAudioTracks().forEach(track => {
-                        track.enabled = true;
-                    });
-                }
-
-                // إنشاء اتصال WebRTC
-                peer = new SimplePeer({
-                    initiator: true,
-                    trickle: false,
-                    stream: localStream
+                // طلب الوصول للميكروفون
+                localStream = await navigator.mediaDevices.getUserMedia({
+                    audio: true,
+                    video: false
                 });
 
-                peer.on('signal', (data) => {
-                    // إرسال عرض المكالمة
-                    database.ref('calls/' + userId).set({
-                        from: currentUserId,
-                        fromName: currentUser.name,
-                        signal: data,
-                        timestamp: Date.now()
-                    });
+                // إرسال دعوة مكالمة
+                database.ref('calls/' + friendId).set({
+                    type: 'voice',
+                    from: currentUser.id,
+                    fromName: currentUser.name,
+                    fromAvatar: currentUser.avatar,
+                    timestamp: Date.now()
                 });
 
-                peer.on('stream', (stream) => {
-                    // تم استلام الصوت من الطرف الآخر
-                    console.log('استلام الصوت من الطرف الآخر');
-                });
+                // عرض نافذة المكالمة
+                showCallModal('صوتية', friendName, friendAvatar, true);
+                callStatus.textContent = 'جاري الاتصال...';
 
-                peer.on('connect', () => {
-                    console.log('الاتصال تم بنجاح!');
-                });
-
-                peer.on('error', (err) => {
-                    console.error('خطأ في الاتصال:', err);
-                    endCurrentCall();
-                });
-
-                // تحديث الواجهة
-                currentCall = { userId, userName };
-                callWithText.textContent = `تتحدث مع: ${userName}`;
-                voiceStatus.textContent = 'جاري الاتصال...';
+                // بدء المؤقت
                 startCallTimer();
+
+                // إضافة أزرار التحكم
+                callControls.innerHTML = `
+                    <button class="call-control-btn mute-btn" id="muteBtn">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button class="call-control-btn end-call-btn" id="endCallBtn">
+                        <i class="fas fa-phone-slash"></i>
+                    </button>
+                `;
+
+                document.getElementById('endCallBtn').addEventListener('click', endCurrentCall);
+                
+                let isMuted = false;
+                document.getElementById('muteBtn').addEventListener('click', () => {
+                    if (localStream) {
+                        localStream.getAudioTracks().forEach(track => {
+                            track.enabled = isMuted;
+                        });
+                        isMuted = !isMuted;
+                        const icon = document.getElementById('muteBtn').querySelector('i');
+                        icon.className = isMuted ? 'fas fa-microphone-slash' : 'fas fa-microphone';
+                    }
+                });
+
+                // حفظ بيانات المكالمة الحالية
+                currentCall = {
+                    type: 'voice',
+                    friendId: friendId,
+                    friendName: friendName
+                };
 
             } catch (error) {
                 console.error('خطأ في بدء المكالمة:', error);
-                alert('تعذر بدء المكالمة. تأكد من السماح للميكروفون.');
-                endCurrentCall();
+                alert('تعذر الوصول للميكروفون. تأكد من السماح بالوصول.');
             }
         };
 
-        // الاستماع لدعوات المكالمات
-        function listenForCalls() {
-            database.ref('calls/' + currentUserId).on('value', async (snapshot) => {
+        // بدء مكالمة فيديو
+        window.startVideoCall = async function(friendId, friendName, friendAvatar) {
+            try {
+                // طلب الوصول للكاميرا والميكروفون
+                localStream = await navigator.mediaDevices.getUserMedia({
+                    audio: true,
+                    video: true
+                });
+
+                // إرسال دعوة مكالمة
+                database.ref('calls/' + friendId).set({
+                    type: 'video',
+                    from: currentUser.id,
+                    fromName: currentUser.name,
+                    fromAvatar: currentUser.avatar,
+                    timestamp: Date.now()
+                });
+
+                // عرض نافذة المكالمة
+                showCallModal('فيديو', friendName, friendAvatar, true);
+                callStatus.textContent = 'جاري الاتصال...';
+
+                // بدء المؤقت
+                startCallTimer();
+
+                // إضافة أزرار التحكم
+                callControls.innerHTML = `
+                    <button class="call-control-btn mute-btn" id="muteBtn">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button class="call-control-btn end-call-btn" id="endCallBtn">
+                        <i class="fas fa-phone-slash"></i>
+                    </button>
+                `;
+
+                document.getElementById('endCallBtn').addEventListener('click', endCurrentCall);
+                
+                let isMuted = false;
+                document.getElementById('muteBtn').addEventListener('click', () => {
+                    if (localStream) {
+                        localStream.getAudioTracks().forEach(track => {
+                            track.enabled = isMuted;
+                        });
+                        isMuted = !isMuted;
+                        const icon = document.getElementById('muteBtn').querySelector('i');
+                        icon.className = isMuted ? 'fas fa-microphone-slash' : 'fas fa-microphone';
+                    }
+                });
+
+                // حفظ بيانات المكالمة الحالية
+                currentCall = {
+                    type: 'video',
+                    friendId: friendId,
+                    friendName: friendName
+                };
+
+            } catch (error) {
+                console.error('خطأ في بدء المكالمة:', error);
+                alert('تعذر الوصول للكاميرا/الميكروفون. تأكد من السماح بالوصول.');
+            }
+        };
+
+        // الاستماع للمكالمات الواردة
+        function listenForIncomingCalls() {
+            database.ref('calls/' + currentUser.id).on('value', (snapshot) => {
                 const callData = snapshot.val();
                 if (!callData || currentCall) return;
 
                 // عرض تنبيه المكالمة
-                callerName.textContent = callData.fromName;
-                callAlert.style.display = 'block';
+                incomingCallAvatar.textContent = callData.fromAvatar;
+                incomingCallerName.textContent = callData.fromName;
+                incomingCall.style.display = 'block';
 
                 // قبول المكالمة
-                acceptCallBtn.onclick = async () => {
-                    callAlert.style.display = 'none';
-
+                acceptIncomingCallBtn.onclick = async () => {
+                    incomingCall.style.display = 'none';
+                    
                     try {
-                        // تفعيل الصوت
-                        if (localStream) {
-                            localStream.getAudioTracks().forEach(track => {
-                                track.enabled = true;
-                            });
-                        }
-
-                        // إنشاء اتصال WebRTC
-                        peer = new SimplePeer({
-                            initiator: false,
-                            trickle: false,
-                            stream: localStream
+                        // طلب الوصول للميكروفون (والكاميرا إذا كانت مكالمة فيديو)
+                        localStream = await navigator.mediaDevices.getUserMedia({
+                            audio: true,
+                            video: callData.type === 'video'
                         });
 
-                        peer.signal(callData.signal);
+                        // عرض نافذة المكالمة
+                        showCallModal(callData.type === 'video' ? 'فيديو' : 'صوتية', 
+                                    callData.fromName, callData.fromAvatar, false);
+                        callStatus.textContent = 'مكالمة جارية';
 
-                        peer.on('signal', (data) => {
-                            // إرسال الإجابة
-                            database.ref('calls/' + callData.from + '/answer').set({
-                                to: currentUserId,
-                                signal: data,
-                                timestamp: Date.now()
-                            });
+                        // إرسال إجابة القبول
+                        database.ref('calls/' + callData.from + '/answer').set({
+                            accepted: true,
+                            by: currentUser.id,
+                            timestamp: Date.now()
                         });
 
-                        peer.on('stream', (stream) => {
-                            console.log('استلام الصوت من الطرف الآخر');
-                        });
-
-                        peer.on('error', (err) => {
-                            console.error('خطأ في الاتصال:', err);
-                            endCurrentCall();
-                        });
-
-                        // تحديث الواجهة
-                        currentCall = { userId: callData.from, userName: callData.fromName };
-                        callWithText.textContent = `تتحدث مع: ${callData.fromName}`;
-                        voiceStatus.textContent = 'مكالمة جارية';
+                        // بدء المؤقت
                         startCallTimer();
 
-                        // حذف بيانات المكالمة
+                        // إضافة أزرار التحكم
+                        callControls.innerHTML = `
+                            <button class="call-control-btn mute-btn" id="muteBtn">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                            <button class="call-control-btn end-call-btn" id="endCallBtn">
+                                <i class="fas fa-phone-slash"></i>
+                            </button>
+                        `;
+
+                        document.getElementById('endCallBtn').addEventListener('click', endCurrentCall);
+                        
+                        let isMuted = false;
+                        document.getElementById('muteBtn').addEventListener('click', () => {
+                            if (localStream) {
+                                localStream.getAudioTracks().forEach(track => {
+                                    track.enabled = isMuted;
+                                });
+                                isMuted = !isMuted;
+                                const icon = document.getElementById('muteBtn').querySelector('i');
+                                icon.className = isMuted ? 'fas fa-microphone-slash' : 'fas fa-microphone';
+                            }
+                        });
+
+                        // حفظ بيانات المكالمة الحالية
+                        currentCall = {
+                            type: callData.type,
+                            friendId: callData.from,
+                            friendName: callData.fromName
+                        };
+
+                        // حذف بيانات الدعوة
                         snapshot.ref.remove();
 
                     } catch (error) {
                         console.error('خطأ في قبول المكالمة:', error);
-                        alert('تعذر قبول المكالمة');
-                        endCurrentCall();
+                        alert('تعذر الوصول للميكروفون/الكاميرا.');
+                        snapshot.ref.remove();
                     }
                 };
 
                 // رفض المكالمة
-                rejectCallBtn.onclick = () => {
-                    callAlert.style.display = 'none';
+                rejectIncomingCallBtn.onclick = () => {
+                    incomingCall.style.display = 'none';
+                    database.ref('calls/' + callData.from + '/answer').set({
+                        rejected: true,
+                        by: currentUser.id,
+                        timestamp: Date.now()
+                    });
                     snapshot.ref.remove();
                 };
             });
         }
 
+        // عرض نافذة المكالمة
+        function showCallModal(type, name, avatar, isOutgoing) {
+            callModal.style.display = 'block';
+            callAvatar.textContent = avatar;
+            callTitle.textContent = `مكالمة ${type}`;
+            callStatus.textContent = isOutgoing ? 'جاري الاتصال...' : 'مكالمة واردة';
+            callTimer.textContent = '00:00';
+        }
+
         // بدء مؤقت المكالمة
         function startCallTimer() {
-            callStartTime = new Date();
+            const startTime = new Date();
             callTimerInterval = setInterval(() => {
                 const now = new Date();
-                const diff = Math.floor((now - callStartTime) / 1000);
+                const diff = Math.floor((now - startTime) / 1000);
                 const minutes = Math.floor(diff / 60).toString().padStart(2, '0');
                 const seconds = (diff % 60).toString().padStart(2, '0');
                 callTimer.textContent = `${minutes}:${seconds}`;
@@ -1093,58 +1248,152 @@
                 callTimerInterval = null;
             }
 
-            if (peer) {
-                peer.destroy();
-                peer = null;
-            }
-
-            // كتم الصوت
             if (localStream) {
-                localStream.getAudioTracks().forEach(track => {
-                    track.enabled = false;
-                });
+                localStream.getTracks().forEach(track => track.stop());
+                localStream = null;
             }
 
+            // إعلام الطرف الآخر
             if (currentCall) {
-                // إعلام الطرف الآخر
-                database.ref('calls/' + currentCall.userId + '/end').set({
-                    by: currentUserId,
+                database.ref('calls/' + currentCall.friendId + '/end').set({
+                    ended: true,
+                    by: currentUser.id,
                     timestamp: Date.now()
                 });
+
+                // إضافة رسالة النظام
+                if (currentChatFriend && currentChatFriend.id === currentCall.friendId) {
+                    addSystemMessage(`مكالمة ${currentCall.type === 'video' ? 'فيديو' : 'صوتية'} - ${callTimer.textContent}`);
+                }
 
                 currentCall = null;
             }
 
-            // إعادة تعيين الواجهة
-            callWithText.textContent = 'اختر صديقاً من القائمة للاتصال';
-            callTimer.textContent = '00:00';
-            voiceStatus.textContent = 'جاهز للتحدث';
-            voiceBar.style.height = '0%';
-            voiceIcon.className = 'fas fa-microphone voice-icon';
-            voiceIcon.style.color = '#FF5722';
-            isMuted = false;
-            muteBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+            // إغلاق نافذة المكالمة
+            callModal.style.display = 'none';
         }
 
-        // زر إنهاء المكالمة
-        endCallBtn.addEventListener('click', endCurrentCall);
+        // تحميل الرسائل
+        function loadMessages(friendId) {
+            const chatId = [currentUser.id, friendId].sort().join('_');
+            messagesContainer.innerHTML = '';
 
-        // زر كتم الصوت
-        muteBtn.addEventListener('click', () => {
-            if (!localStream) return;
+            // إضافة رسالة ترحيب
+            addSystemMessage('هذه بداية المحادثة مع ' + currentChatFriend.name);
 
-            const audioTracks = localStream.getAudioTracks();
-            audioTracks.forEach(track => {
-                track.enabled = isMuted;
+            database.ref('messages/' + chatId).limitToLast(50).on('value', (snapshot) => {
+                messagesContainer.innerHTML = '';
+                snapshot.forEach((messageSnap) => {
+                    const message = messageSnap.val();
+                    displayMessage(message);
+                });
+                scrollToBottom();
             });
+        }
+
+        // عرض رسالة
+        function displayMessage(message) {
+            const isSent = message.senderId === currentUser.id;
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+
+            const time = new Date(message.timestamp).toLocaleTimeString('ar-EG', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            let messageContent = message.text;
             
-            isMuted = !isMuted;
-            muteBtn.innerHTML = isMuted ? 
-                '<i class="fas fa-microphone-slash"></i>' : 
-                '<i class="fas fa-microphone"></i>';
-            
-            voiceStatus.textContent = isMuted ? 'صوت مكتوم' : 'تتحدث الآن';
+            if (message.type === 'voice') {
+                messageContent = `
+                    <div class="voice-message">
+                        <button class="voice-play-btn">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <div>رسالة صوتية</div>
+                        <div class="voice-duration">${message.duration || '0:00'}</div>
+                    </div>
+                `;
+            }
+
+            messageDiv.innerHTML = `
+                <div class="message-content">
+                    ${messageContent}
+                    <div class="message-time">${time}</div>
+                </div>
+            `;
+
+            messagesContainer.appendChild(messageDiv);
+        }
+
+        // إضافة رسالة نظام
+        function addSystemMessage(text) {
+            const systemDiv = document.createElement('div');
+            systemDiv.className = 'system-message';
+            systemDiv.innerHTML = `<div class="system-content">${text}</div>`;
+            messagesContainer.appendChild(systemDiv);
+        }
+
+        // إرسال رسالة
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
         });
+
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text || !currentChatFriend) return;
+
+            const chatId = [currentUser.id, currentChatFriend.id].sort().join('_');
+            const messageData = {
+                text: text,
+                senderId: currentUser.id,
+                senderName: currentUser.name,
+                timestamp: Date.now(),
+                type: 'text'
+            };
+
+            database.ref('messages/' + chatId).push(messageData);
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            scrollToBottom();
+        }
+
+        // التمرير لأسفل
+        function scrollToBottom() {
+            setTimeout(() => {
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            }, 100);
+        }
+
+        // إغلاق نافذة المكالمة بالنقر خارجها
+        window.addEventListener('click', (e) => {
+            if (e.target === callModal) {
+                endCurrentCall();
+            }
+        });
+
+        // تحسين الواجهة للجوال
+        function handleResponsiveDesign() {
+            if (window.innerWidth <= 768) {
+                sidebar.classList.add('active');
+                chatArea.classList.remove('active');
+            } else {
+                sidebar.classList.remove('active');
+                chatArea.classList.remove('active');
+            }
+        }
+
+        window.addEventListener('resize', handleResponsiveDesign);
+        handleResponsiveDesign();
     </script>
 </body>
 </html>
